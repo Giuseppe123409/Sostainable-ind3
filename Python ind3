@@ -1,0 +1,240 @@
+# Import
+from flask import Flask, render_template
+
+
+app = Flask(__name__)
+
+def result_calculate(size, lights, device):
+    # Variabili che consentono di calcolare il consumo energetico degli apparecchi
+    home_coef = 100
+    light_coef = 0.04
+    devices_coef = 5   
+    return size * home_coef + lights * light_coef + device * devices_coef 
+
+# La prima pagina
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+# La seconda pagina
+@app.route('/<size>')
+def lights(size):
+    return render_template(
+                            'lights.html', 
+                            size=size
+                           )
+
+# La terza pagina
+@app.route('/<size>/<lights>')
+def electronics(size, lights):
+    return render_template(
+                            'electronics.html',
+                            size = size, 
+                            lights = lights                           
+                           )
+
+# Calcolo
+@app.route('/<size>/<lights>/<device>')
+def end(size, lights, device):
+    return render_template('end.html', 
+                            result=result_calculate(int(size),
+                                                    int(lights), 
+                                                    int(device)
+                                                    )
+                        )
+app.run(debug=True)
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+  >
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="../static/css/style.css">
+  <title>Calcolatore di efficienza energetica per smart home</title>
+</head>
+<body>
+  <header class="header">
+    <div class="header__text">
+      <h1>Calcola l'efficienza energetica della tua casa!</h1>
+      <p>Prendi l'iniziativa e risolvi il problema del consumo eccessivo di energia!</p>
+    </div>
+  </header>
+  <main>
+    {% block content %}
+    <h2 class="main__title">Specificare il numero di dispositivi che utilizzano energia elettrica:</h2>
+    <ul class="list" id="list">
+      <!-- Consegna #3 -->
+      <li class="list__item">
+        <a href='{{lights + "/4" }}'<
+          <img class="item__img" src="../static/img/battery.svg" alt="battery">
+          <span>3-5 dispositivi</span></a>
+      </li>
+      <li class="list__item">
+        <a href='{{lights + "/7" }}'>
+          <img class="item__img" src="../static/img/battery.svg" alt="battery">
+          <span>6-8 dispositivi</span></a>
+      </li>
+      <li class="list__item">
+        <a href="{{lights + "/12"}}">
+          <img class="item__img" src="https://img.welt.de/img/debatte/kommentare/mobile121011492/0902502707-ci102l-w1024/zgbdc5-60dcz22j2ie1i9a48d0-original-jpg.jpg" alt="battery">
+          <span>12+ dispositivi</span></a>
+      </li>
+      <!--  -->
+    </ul>
+    {% endblock %}
+  </main>
+  <footer>
+
+  </footer>
+</body>
+</html>
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+  >
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="../../static/css/style.css"> 
+  <title>Calcolatore di efficienza energetica per smart home</title>
+</head>
+<body>
+  <header class="header">
+    <div class="header__text">
+      <h1>Calcola l'efficienza energetica della tua casa!</h1>
+      <p>Prendi l'iniziativa e risolvi il problema del consumo eccessivo di energia!</p>
+    </div>
+  </header>
+  <main>
+    {% block content %}
+    <h2 class="main__title main__title--margin">L'efficienza energetica della casa:</h2>
+    <div class="main__rez" id="end">
+        {%if result <= 150%}
+        <img class="rez__img" src="../../static/img/planet_good.svg" alt="">
+        <span>Il tuo risultato: {{result}} kWh</span>
+        <span>La tua casa è notevolmente efficiente quando si tratta di consumo energetico!</span>
+        {%elif result >= 151 and result < 300%}
+        <img class="rez__img" src="../../static/img/planet_medium.svg" alt="">
+        <span>Il tuo risultato: {{result}} kWh</span>
+        <span>L'efficienza energetica della tua casa è nella media!</span>
+        {%elif result >= 300%}
+        <img class="rez__img" src="../../static/img/planet_bad.svg" alt="">
+        <span>Il tuo risultato: {{result}} kWh</span>
+        <span>L'efficienza energetica della tua casa è inferiore alla media!</span>
+        {%endif%}
+    </div>
+    {% endblock %}
+  </main>
+  <footer>
+
+  </footer>
+</body>
+</html>
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+  >
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="../static/css/style.css">
+  <title>Calcolatore di efficienza energetica per smart home</title>
+</head>
+<body>
+  <header class="header">
+    <div class="header__text">
+      <h1>Calcola l'efficienza energetica della tua casa!</h1>
+      <p>Prendi l'iniziativa e risolvi il problema del consumo eccessivo di energia.</p>
+    </div>
+  </header>
+  <main>
+    {% block content %}
+    <h2 class="main__title">Selezionare le dimensioni della casa:</h2>
+    <ul class="list">
+      <li class="list__item">
+        <a href="/1">
+        <img class="item__img" src="../static/img/home.svg" alt="home">
+        <span>Casa piccola</span></a>
+      </li>
+      <!-- Consegna #1 -->
+      <li class="list__item">
+        <a href="/2">
+        <img class="item__img" src="../static/img/home.svg" alt="home">
+        <span>Casa media</span></a>
+      </li>
+      <li class="list__item">
+        <a href="/3">
+        <img class="item__img" src="../static/img/home.svg" alt="home">
+        <span>Casa grande</span></a>
+      <!--  -->
+      </li>
+    </ul>
+    {% endblock %}
+  </main>
+  <footer>
+
+  </footer>
+</body>
+</html>
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+  >
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="../static/css/style.css">
+  <title>Calcolatore di efficienza energetica per smart home</title>
+</head>
+<body>
+  <header class="header">
+    <div class="header__text">
+      <h1>Calcola l'efficienza energetica della tua casa!</h1>
+      <p>Prendi l'iniziativa e risolvi il problema del consumo eccessivo di energia!</p>
+    </div>
+  </header>
+  <main>
+    {% block content %}
+    <h2 class="main__title">Selezionare il numero di lampade presenti in casa:</h2>
+    <ul class="list" id="list">
+      <li class="list__item">
+        <a href='{{size + "/3" }}'>
+          <img class="item__img" src="https://th.bing.com/th/id/OIP.XtlHMTZyDGyb6I4niFoLNgHaHa?rs=1&pid=ImgDetMain" alt="light">
+          <span>2-4 lampadine</span></a>
+      </li>
+      <!--Consegna #2 -->
+      <li class="list__item">
+        <a href='{{size + "/7" }}'>
+          <img class="item__img" src="https://u7.uidownload.com/vector/79/199/vector-bulb-eps.jpg" alt="light">
+          <span>4-6 lampadine</span></a>
+      </li>
+      <li class="list__item">
+        <a href='{{size + "/10" }}'>
+          <img class="item__img" src="https://th.bing.com/th/id/OIP.GZElhD6cJ80SunA8IcLcxgHaKG?rs=1&pid=ImgDetMain" alt="light">
+          <span>8+ lampadine</span></a>
+      <li class="list__item">
+          <a href='{{size + "/10" }}'>
+            <img class="item__img" src="https://thumbs.dreamstime.com/b/lampadina-di-eco-con-l-albero-isolato-su-un-fondo-bianco-concetto-energia-pulita-154314235.jpg" alt="light">
+            <span>10+ lampadine</span></a>
+      </li>
+    </ul>
+    {% endblock %}
+  </main>
+  <footer>
+
+  </footer>
+</body>
+</html>
